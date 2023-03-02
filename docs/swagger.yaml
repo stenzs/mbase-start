@@ -1,0 +1,12 @@
+basePath: /
+host: localhost:3000
+info:
+  contact: {}
+  version: "1.0"
+paths:
+  /api/v1/users:
+    get:
+      responses: {}
+    post:
+      responses: {}
+swagger: "2.0"
