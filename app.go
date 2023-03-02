@@ -47,7 +47,7 @@ func main() {
 	v1.Post("/users", handlers.UserCreate)
 
 	// Setup static files
-	app.Static("/static/", "./static/public")
+	app.Static("/", "./static/public")
 
 	// Swagger
 	app.Get("/swagger/*", swagger.New(swagger.Config{ // custom
