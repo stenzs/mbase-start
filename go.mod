@@ -1,4 +1,4 @@
-module mbase-start
+module mbase
 
 go 1.20
 
