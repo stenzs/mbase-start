@@ -2,7 +2,7 @@
 FROM golang:1.19 AS build
 
 # `boilerplate` should be replaced with your project name
-WORKDIR /go/src/boilerplate
+WORKDIR /go/src/mbase
 
 # Copy all the Code and stuff to compile everything
 COPY . .
@@ -24,7 +24,7 @@ RUN mkdir ./static
 COPY ./static ./static
 
 # `boilerplate` should be replaced here as well
-COPY --from=build /go/src/boilerplate/app .
+COPY --from=build /go/src/mbase/app .
 
 # Add packages
 RUN apk -U upgrade \

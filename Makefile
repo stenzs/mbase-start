@@ -1,4 +1,4 @@
-project_name = boilerPlate
+project_name = mbase
 image_name = gofiber:latest
 
 run-local:
