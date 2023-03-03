@@ -15,12 +15,45 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/v1/users": {
-            "get": {
-                "responses": {}
-            },
+        "/api/v1/task": {
             "post": {
-                "responses": {}
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "tags": [
+                    "task"
+                ],
+                "summary": "Create new task",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "uploaded file",
+                        "name": "upload",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "airac",
+                        "name": "airac",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "answer",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "err",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
             }
         }
     }
@@ -29,10 +62,10 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:3000",
+	Host:             "0.0.0.0:3000",
 	BasePath:         "/",
 	Schemes:          []string{},
-	Title:            "",
+	Title:            "Mbase",
 	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,

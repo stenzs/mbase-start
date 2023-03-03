@@ -1,12 +1,35 @@
 basePath: /
-host: localhost:3000
+host: 0.0.0.0:3000
 info:
   contact: {}
+  title: Mbase
   version: "1.0"
 paths:
-  /api/v1/users:
-    get:
-      responses: {}
+  /api/v1/task:
     post:
-      responses: {}
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: uploaded file
+        in: formData
+        name: upload
+        required: true
+        type: file
+      - description: airac
+        in: formData
+        name: airac
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: answer
+          schema:
+            type: string
+        "400":
+          description: err
+          schema:
+            type: string
+      summary: Create new task
+      tags:
+      - task
 swagger: "2.0"
