@@ -1,35 +1,42 @@
 package main
 
 import (
-	"github.com/gofiber/swagger"
-	"mbase/database"
-	"mbase/handlers"
-
 	"flag"
 	"log"
+	"os"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/gofiber/swagger"
+	"github.com/joho/godotenv"
+
 	_ "mbase/docs"
+	"mbase/handlers"
 )
 
-var (
-	port = flag.String("port", ":3000", "Port to listen on")
-	prod = flag.Bool("prod", false, "Enable prefork in Production")
-)
-
-// Mbase
+// mbase
 // @version 1.0
 // @host localhost:3000
 // @BasePath /
 
+func init() {
+	// loads values from .env into the system
+	if err := godotenv.Load(); err != nil {
+		panic(err)
+	}
+}
+
 func main() {
+
+	portNumber, _ := os.LookupEnv("PORT")
+	var (
+		port = flag.String("port", portNumber, "Port to listen on")
+		prod = flag.Bool("prod", false, "Enable prefork in Production")
+	)
+
 	// Parse command-line flags
 	flag.Parse()
-
-	// Connected with database
-	database.Connect()
 
 	// Create fiber app
 	app := fiber.New(fiber.Config{
@@ -43,8 +50,7 @@ func main() {
 	v1 := app.Group("/api/v1")
 
 	// Bind handlers
-	v1.Get("/users", handlers.UserList)
-	v1.Post("/users", handlers.UserCreate)
+	v1.Post("/update", handlers.UpdateData)
 
 	// Setup static files
 	app.Static("/", "./static/public")
@@ -65,4 +71,4 @@ func main() {
 // swaggerDock godoc
 // @Router /api/v1/users [get]
 // @Router /api/v1/users [post]
-func swaggerDock() {}
+//func swaggerDockz() {}
