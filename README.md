@@ -40,6 +40,14 @@ make stop
 make start
 ```
 
+## Update swagger docs
+
+1. Update comments to your API source code, [See Declarative Comments Format](https://swaggo.github.io/swaggo.io/declarative_comments_format/).
+2. Generate docs files
+```bash
+swag init -g app.go
+```
+
 ## Production
 
 ```bash
