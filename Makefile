@@ -18,3 +18,8 @@ docker-stop:
 
 docker-start:
 	docker-compose -f docker-compose.yaml up -d --build mbase
+
+clean-uploads:
+	@if [  -d "static/public/uploads" ];then     \
+		rm -rf static/public/uploads;           \
+    fi
