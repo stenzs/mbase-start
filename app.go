@@ -14,6 +14,7 @@ import (
 
 	_ "mbase/docs"
 	"mbase/handlers"
+	"mbase/services"
 )
 
 // mbase
@@ -23,6 +24,8 @@ import (
 // @BasePath /
 
 func init() {
+	// Make uploads folder
+	dataStorage.MakeUploadFolder()
 	// loads values from .env into the system
 	if err := godotenv.Load(); err != nil {
 		panic(err)
