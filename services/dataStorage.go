@@ -1,10 +1,14 @@
 package dataStorage
 
 import (
+	"bufio"
+	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"mime/multipart"
 	"os"
+	"sync"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -27,4 +31,38 @@ func SaveFile(c *fiber.Ctx, file *multipart.FileHeader) error {
 		return err
 	}
 	return nil
+}
+
+// SaveMultipartFileToBuffer saves multipart file to buffer.
+func SaveMultipartFileToBuffer(fh *multipart.FileHeader) (res []byte, err error) {
+	var buffer bytes.Buffer
+	var f multipart.File
+	var ff *bufio.Writer
+
+	ff = bufio.NewWriter(&buffer)
+	f, err = fh.Open()
+
+	defer func() {
+		err := f.Close()
+		if err == nil {
+		}
+	}()
+
+	_, _ = copyZeroAlloc(ff, f)
+	res = buffer.Bytes()
+	return res, err
+}
+
+func copyZeroAlloc(w io.Writer, r io.Reader) (int64, error) {
+	vBuf := copyBufPool.Get()
+	buf := vBuf.([]byte)
+	n, err := io.CopyBuffer(w, r, buf)
+	copyBufPool.Put(vBuf)
+	return n, err
+}
+
+var copyBufPool = sync.Pool{
+	New: func() interface{} {
+		return make([]byte, 4096)
+	},
 }

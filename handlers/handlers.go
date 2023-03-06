@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"mime/multipart"
 
 	"github.com/gofiber/fiber/v2"
@@ -36,6 +35,7 @@ func UpdateData(c *fiber.Ctx) error {
 	var err error
 	var file *multipart.FileHeader
 	var airac string
+	var b []byte
 
 	airac = c.FormValue("airac")
 	err = validator.ValidateAirac(airac)
@@ -48,14 +48,22 @@ func UpdateData(c *fiber.Ctx) error {
 		return customError(c, err)
 	}
 
+	b, err = dataStorage.SaveMultipartFileToBuffer(file)
+	if err != nil {
+		return customError(c, err)
+	}
+
+	err = validator.ValidateFile(b)
+	if err != nil {
+		return customError(c, err)
+	}
+
 	err = dataStorage.SaveFile(c, file)
 	if err != nil {
 		return customError(c, err)
 	}
 
-	fmt.Println(airac)
-	fmt.Println(file.Filename)
-	// CREATE KAFKA MESSAGE
+	// KAFKA MESSAGE
 
 	return c.JSON(fiber.Map{
 		"success": "create task",
