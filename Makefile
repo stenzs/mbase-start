@@ -10,11 +10,11 @@ requirements:
 clean-packages:
 	go clean -modcache
 
-delete-container-if-exist:
-	docker stop $(project_name) || true && docker rm $(project_name) || true
-
 docker-stop:
-	docker stop $(project_name)
+	docker-compose -f docker-compose.yaml stop
+
+docker-rm:
+	docker-compose -f docker-compose.yaml stop && docker-compose -f docker-compose.yaml rm -f
 
 docker-start:
 	docker-compose -f docker-compose.yaml up -d --build mbase

@@ -6,23 +6,23 @@
 
 
 ```bash
-go run app.go
+make docker-start
 ```
 
 ### Use local container
 
 ```
-# Clean packages
-make clean-packages
+# Clean upload folder
+make clean-uploads
 
-# Generate go.mod & go.sum files
-make requirements
+# Start app in docker
+make docker-start
 
 # Stop app in docker
 make docker-stop
 
-# Start app in docker
-make docker-start
+# Remove app docker containers
+make docker-rm
 ```
 
 ## Update swagger docs
