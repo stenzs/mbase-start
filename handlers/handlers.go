@@ -5,7 +5,8 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 
-	"mbase/services"
+	"mbase/services/dataStorage"
+	"mbase/services/messageBroker"
 	"mbase/services/validator"
 )
 
@@ -63,7 +64,10 @@ func UpdateData(c *fiber.Ctx) error {
 		return customError(c, err)
 	}
 
-	// KAFKA MESSAGE
+	err = messageBroker.SendMessage(airac)
+	if err != nil {
+		return customError(c, err)
+	}
 
 	return c.JSON(fiber.Map{
 		"success": "create task",

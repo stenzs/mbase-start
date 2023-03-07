@@ -14,7 +14,7 @@ import (
 
 	_ "mbase/docs"
 	"mbase/handlers"
-	"mbase/services"
+	"mbase/services/dataStorage"
 )
 
 // mbase
