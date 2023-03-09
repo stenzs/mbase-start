@@ -15,7 +15,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func getHash(b []byte) string {
+func GetHash(b []byte) string {
 	hashing := sha256.New()
 	hashing.Write(b)
 	hash := base64.URLEncoding.EncodeToString(hashing.Sum(nil))
@@ -42,7 +42,7 @@ func SaveFile(c *fiber.Ctx, file *multipart.FileHeader) error {
 		return err
 	}
 
-	hash = getHash(b)
+	hash = GetHash(b)
 	path = fmt.Sprintf("./static/public/uploads/%s", hash)
 
 	if _, err = os.Stat(path); errors.Is(err, os.ErrNotExist) {

@@ -4,6 +4,7 @@ import (
 	"flag"
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -34,9 +35,8 @@ func init() {
 
 func main() {
 
-	portNumber, _ := os.LookupEnv("PORT")
 	var (
-		port = flag.String("port", portNumber, "Port to listen on")
+		port = flag.String("port", os.Getenv("PORT"), "Port to listen on")
 		prod = flag.Bool("prod", false, "Enable prefork in Production")
 	)
 
@@ -48,11 +48,12 @@ func main() {
 		Prefork: *prod, // go run app.go -prod
 	})
 
+	allowCredential, _ := strconv.ParseBool(os.Getenv("ALLOW_CREDENTIALS"))
 	app.Use(cors.New(cors.Config{
-		AllowHeaders:     "Origin,Content-Type,Accept,Content-Length,Accept-Language,Accept-Encoding,Connection,Access-Control-Allow-Origin",
-		AllowOrigins:     "*",
-		AllowCredentials: true,
-		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS",
+		AllowHeaders:     os.Getenv("ALLOW_HEADERS"),
+		AllowOrigins:     os.Getenv("ALLOW_ORIGINS"),
+		AllowCredentials: allowCredential,
+		AllowMethods:     os.Getenv("GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS"),
 	}))
 	app.Use(recover.New())
 	app.Use(logger.New())

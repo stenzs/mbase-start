@@ -35,7 +35,7 @@ func customError(c *fiber.Ctx, err error) error {
 func UpdateData(c *fiber.Ctx) error {
 	var err error
 	var file *multipart.FileHeader
-	var airac string
+	var airac, hash string
 	var b []byte
 
 	airac = c.FormValue("airac")
@@ -64,7 +64,8 @@ func UpdateData(c *fiber.Ctx) error {
 		return customError(c, err)
 	}
 
-	err = messageBroker.SendMessage(airac)
+	hash = dataStorage.GetHash(b)
+	err = messageBroker.SendMessage(airac, hash)
 	if err != nil {
 		return customError(c, err)
 	}

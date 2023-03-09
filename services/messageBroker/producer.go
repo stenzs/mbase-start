@@ -7,7 +7,7 @@ import (
 	"github.com/segmentio/kafka-go"
 )
 
-func SendMessage(message string) error {
+func SendMessage(key, value string) error {
 
 	topic := "my-topic"
 	partition := 0
@@ -23,9 +23,10 @@ func SendMessage(message string) error {
 	}
 
 	_, err = conn.WriteMessages(
-		kafka.Message{Value: []byte(message)},
-		kafka.Message{Value: []byte("two!")},
-		kafka.Message{Value: []byte("three!")},
+		kafka.Message{
+			Key:   []byte(key),
+			Value: []byte(value),
+		},
 	)
 	if err != nil {
 		return err
