@@ -25,8 +25,8 @@ func GetHash(b []byte) string {
 func MakeUploadFolder() {
 	var err error
 
-	if _, err = os.Stat("./static/public/uploads"); errors.Is(err, os.ErrNotExist) {
-		if err = os.Mkdir("./static/public/uploads", os.ModePerm); err != nil {
+	if _, err = os.Stat(os.Getenv("UPLOAD_FOLDER")); errors.Is(err, os.ErrNotExist) {
+		if err = os.Mkdir(os.Getenv("UPLOAD_FOLDER"), os.ModePerm); err != nil {
 			panic(err)
 		}
 	}
@@ -43,7 +43,7 @@ func SaveFile(c *fiber.Ctx, file *multipart.FileHeader) error {
 	}
 
 	hash = GetHash(b)
-	path = fmt.Sprintf("./static/public/uploads/%s", hash)
+	path = fmt.Sprintf("%s/%s", os.Getenv("UPLOAD_FOLDER"), hash)
 
 	if _, err = os.Stat(path); errors.Is(err, os.ErrNotExist) {
 		err = c.SaveFile(file, path)

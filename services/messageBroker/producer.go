@@ -2,6 +2,8 @@ package messageBroker
 
 import (
 	"context"
+	"os"
+	"strconv"
 	"time"
 
 	"github.com/segmentio/kafka-go"
@@ -9,10 +11,13 @@ import (
 
 func SendMessage(key, value string) error {
 
-	topic := "my-topic"
-	partition := 0
-
-	conn, err := kafka.DialLeader(context.Background(), "tcp", "localhost:29092", topic, partition)
+	partition, _ := strconv.Atoi(os.Getenv("KAFKA_CONNECTION_PARTITION"))
+	conn, err := kafka.DialLeader(
+		context.Background(),
+		"tcp",
+		os.Getenv("KAFKA_CONNECTION_HOST"),
+		os.Getenv("KAFKA_CONNECTION_TOPIC"),
+		partition)
 	if err != nil {
 		return err
 	}
