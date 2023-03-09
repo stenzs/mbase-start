@@ -16,10 +16,11 @@ func NotFound(c *fiber.Ctx) error {
 }
 
 // customError returns custom 400 error
-func customError(c *fiber.Ctx, err error) error {
-	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-		"error": true,
-		"msg":   err.Error(),
+func customError(c *fiber.Ctx, err error, status int, description string) error {
+	return c.Status(status).JSON(fiber.Map{
+		"error":       true,
+		"msg":         err.Error(),
+		"description": description,
 	})
 }
 
@@ -41,37 +42,37 @@ func UpdateData(c *fiber.Ctx) error {
 	airac = c.FormValue("airac")
 	err = validator.ValidateAirac(airac)
 	if err != nil {
-		return customError(c, err)
+		return customError(c, err, 400, "")
 	}
 
 	file, err = c.FormFile("upload")
 	if err != nil {
-		return customError(c, err)
+		return customError(c, err, 400, "")
 	}
 
 	b, err = dataStorage.SaveMultipartFileToBuffer(file)
 	if err != nil {
-		return customError(c, err)
+		return customError(c, err, 400, "")
 	}
 
 	err = validator.ValidateFile(b)
 	if err != nil {
-		return customError(c, err)
+		return customError(c, err, 400, "")
 	}
 
 	err = dataStorage.SaveFile(c, file)
 	if err != nil {
-		return customError(c, err)
+		return customError(c, err, 400, "")
 	}
 
 	hash = dataStorage.GetHash(b)
 	err = messageBroker.SendMessage(airac, hash)
 	if err != nil {
-		return customError(c, err)
+		return customError(c, err, 400, "")
 	}
 
 	return c.JSON(fiber.Map{
-		"success": "create task",
+		"message": "task created",
 	})
 
 }
