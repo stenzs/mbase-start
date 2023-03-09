@@ -61,7 +61,7 @@ services:
       - kafka:/var/lib/kafka/data
     ports:
       - "29092:29092"
-      - "9092:9092"
+      - "29101:29101"
     env_file:
       - .env
     healthcheck:
