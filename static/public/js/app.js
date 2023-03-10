@@ -11,7 +11,7 @@ const handleSubmit = async (event) => {
 
 	formData.append("upload", inputFile.files[0]);
 	formData.append("airac", inputValue.value);
-	let result = await fetch("http://localhost:3000/api/v1/task", {
+	let result = await fetch("api/v1/task", {
 		method: "post",
 		body: formData,
 	}).catch((error) => ("Something went wrong!", error));
@@ -22,6 +22,8 @@ const handleSubmit = async (event) => {
 	} else {
 		if (apiResponse["message"] !== undefined) {
 			document.getElementById('apiResponse').innerHTML = JSON.stringify(apiResponse["message"]);
+			document.getElementById("value").value = "";
+			document.getElementById('file').value = "";
 		} else {
 			document.getElementById('apiResponse').innerHTML = JSON.stringify(apiResponse["msg"]);
 		}
