@@ -4,10 +4,15 @@ import (
 	"errors"
 	"fmt"
 	"mime/multipart"
+	"strconv"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 
+	"mbase/models"
 	"mbase/services/dataStorage"
+	"mbase/services/messageBroker"
 	"mbase/services/validator"
 )
 
@@ -48,6 +53,7 @@ func UpdateData(c *fiber.Ctx) error {
 	var form *multipart.Form
 	var airac string
 	var b []byte
+	var filesHash []string
 
 	airac = c.FormValue("airac")
 	err = validator.ValidateAirac(airac)
@@ -85,6 +91,16 @@ func UpdateData(c *fiber.Ctx) error {
 				file.Filename))
 		}
 
+		filesHash = append(filesHash, dataStorage.GetHash(b))
+
+	}
+
+	numAirac, _ := strconv.ParseInt(airac, 10, 16)
+	message := models.Task{Uuid: uuid.New(), PublishedAt: time.Now(), Airac: numAirac, Files: filesHash}
+
+	err = messageBroker.SendMessage(message)
+	if err != nil {
+		return customError(c, err, 400, "Ошибка отправки сообщения брокеру")
 	}
 
 	//hash = dataStorage.GetHash(b)

@@ -5,7 +5,7 @@ networks:
     driver: bridge
 
 volumes:
-  redis_data:
+  redis-data:
     driver: local
 
 services:
@@ -15,7 +15,7 @@ services:
     networks:
       - mbase
     depends_on:
-      mbase_redis:
+      mbase-redis:
         condition: service_healthy
     restart: always
     build:
@@ -28,8 +28,8 @@ services:
     env_file:
       - .env
 
-  mbase_redis:
-    container_name: mbase_redis
+  mbase-redis:
+    container_name: mbase-redis
     image: docker.io/bitnami/redis:7.0
     networks:
       - mbase
@@ -37,7 +37,7 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - redis_data:/bitnami/redis/data
+      - redis-data:/bitnami/redis/data
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
       - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL

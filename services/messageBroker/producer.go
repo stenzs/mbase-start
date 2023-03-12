@@ -1,46 +1,30 @@
 package messageBroker
 
 import (
-	"context"
-	"os"
-	"strconv"
-	"time"
+	"encoding/json"
 
-	"github.com/segmentio/kafka-go"
+	"github.com/adjust/rmq"
+
+	"mbase/models"
 )
 
-func SendMessage(key, value string) error {
+type Task struct {
+	id    int
+	name  string
+	name2 string
+}
 
-	partition, _ := strconv.Atoi(os.Getenv("KAFKA_CONNECTION_PARTITION"))
-	conn, err := kafka.DialLeader(
-		context.Background(),
-		"tcp",
-		os.Getenv("KAFKA_CONNECTION_HOST"),
-		os.Getenv("KAFKA_CONNECTION_TOPIC"),
-		partition)
+func SendMessage(message models.Task) error {
+	connection := rmq.OpenConnection("mbase", "tcp", "localhost:6379", 1)
+	taskQueue := connection.OpenQueue("tasks")
+
+	taskBytes, err := json.Marshal(message)
 	if err != nil {
 		return err
 	}
 
-	err = conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
-	if err != nil {
-		return err
-	}
+	taskQueue.PublishBytes(taskBytes)
 
-	_, err = conn.WriteMessages(
-		kafka.Message{
-			Key:   []byte(key),
-			Value: []byte(value),
-		},
-	)
-	if err != nil {
-		return err
-	}
-
-	err = conn.Close()
-
-	if err != nil {
-		return err
-	}
 	return nil
+
 }

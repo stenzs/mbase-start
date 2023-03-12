@@ -19,8 +19,8 @@ docker-rm:
 docker-start:
 	docker-compose -f docker-compose.yaml up -d --build mbase
 
-docker-start-only-kafka:
-	docker-compose -f docker-compose.yaml up -d --build kafka
+docker-start-only-redis:
+	docker-compose -f docker-compose.yaml up -d --build mbase-redis
 
 clean-uploads:
 	@if [  -d "static/public/uploads" ];then     \
