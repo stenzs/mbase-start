@@ -5,9 +5,8 @@ networks:
     driver: bridge
 
 volumes:
-  kafka:
-  zookeeper_data:
-  zookeeper_logs:
+  redis_data:
+    driver: local
 
 services:
   mbase:
@@ -16,7 +15,7 @@ services:
     networks:
       - mbase
     depends_on:
-      kafka:
+      mbase_redis:
         condition: service_healthy
     restart: always
     build:
@@ -29,44 +28,22 @@ services:
     env_file:
       - .env
 
-  zookeeper:
-    container_name: zookeeper
-    image: confluentinc/cp-zookeeper:7.3.2
+  mbase_redis:
+    container_name: mbase_redis
+    image: docker.io/bitnami/redis:7.0
     networks:
       - mbase
-    env_file:
-      - .env
-    volumes:
-      - zookeeper_data:/var/lib/zookeeper/data
-      - zookeeper_logs:/var/lib/zookeeper/log
+    restart: always
     ports:
-      - "22181:2181"
+      - "6379:6379"
+    volumes:
+      - redis_data:/bitnami/redis/data
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
     healthcheck:
-      test: nc -z localhost 2181 || exit -1
+      test: ["CMD", "redis-cli","ping"]
       start_period: 15s
       interval: 5s
       timeout: 10s
       retries: 10
-
-  kafka:
-    container_name: kafka
-    image: confluentinc/cp-kafka:7.3.2
-    networks:
-      - mbase
-    depends_on:
-      zookeeper:
-        condition: service_healthy
-    restart: always
-    volumes:
-      - kafka:/var/lib/kafka/data
-    ports:
-      - "29092:29092"
-      - "29101:29101"
-    env_file:
-      - .env
-    healthcheck:
-      test: nc -z localhost 9092 || exit -1
-      start_period: 15s
-      interval: 5s
-      timeout: 10s
-      retries: 100
