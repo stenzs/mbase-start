@@ -1,12 +1,13 @@
 package handlers
 
 import (
+	"errors"
+	"fmt"
 	"mime/multipart"
 
 	"github.com/gofiber/fiber/v2"
 
 	"mbase/services/dataStorage"
-	"mbase/services/messageBroker"
 	"mbase/services/validator"
 )
 
@@ -18,9 +19,16 @@ func NotFound(c *fiber.Ctx) error {
 // customError returns custom 400 error
 func customError(c *fiber.Ctx, err error, status int, description string) error {
 	return c.Status(status).JSON(fiber.Map{
-		"error":       true,
-		"msg":         err.Error(),
+		"error":       err.Error(),
 		"description": description,
+	})
+}
+
+// successMessage returns success 200 message
+func successMessage(c *fiber.Ctx, message string) error {
+	return c.Status(200).JSON(fiber.Map{
+		"status":  "OK",
+		"message": message,
 	})
 }
 
@@ -36,43 +44,55 @@ func customError(c *fiber.Ctx, err error, status int, description string) error 
 func UpdateData(c *fiber.Ctx) error {
 	var err error
 	var file *multipart.FileHeader
-	var airac, hash string
+	var files []*multipart.FileHeader
+	var form *multipart.Form
+	var airac string
 	var b []byte
 
 	airac = c.FormValue("airac")
 	err = validator.ValidateAirac(airac)
 	if err != nil {
-		return customError(c, err, 400, "")
+		return customError(c, err, 400, "Невалидное значение airac")
 	}
 
-	file, err = c.FormFile("upload")
+	form, err = c.MultipartForm()
 	if err != nil {
-		return customError(c, err, 400, "")
+		return customError(c, err, 400, "Не отправлена form-data")
 	}
 
-	b, err = dataStorage.SaveMultipartFileToBuffer(file)
-	if err != nil {
-		return customError(c, err, 400, "")
+	files = form.File["upload"]
+	if len(files) == 0 {
+		err = errors.New("len of form.File[\"upload\"] < 0")
+		return customError(c, err, 400, "Не загружено ни одного файла")
 	}
 
-	err = validator.ValidateFile(b)
-	if err != nil {
-		return customError(c, err, 400, "")
+	for _, file = range files {
+
+		b, err = dataStorage.SaveMultipartFileToBuffer(file)
+		if err != nil {
+			return customError(c, err, 400, fmt.Sprintf("Ошибка сохранения файла %s в буфер",
+				file.Filename))
+		}
+
+		err = validator.ValidateFile(b)
+		if err != nil {
+			return customError(c, err, 400, fmt.Sprintf("Ошибка валидации файла %s", file.Filename))
+		}
+
+		err = dataStorage.SaveFile(c, file)
+		if err != nil {
+			return customError(c, err, 400, fmt.Sprintf("Ошибка сохранения файла %s в хранилище",
+				file.Filename))
+		}
+
 	}
 
-	err = dataStorage.SaveFile(c, file)
-	if err != nil {
-		return customError(c, err, 400, "")
-	}
+	//hash = dataStorage.GetHash(b)
+	//err = messageBroker.SendMessage(airac, hash)
+	//if err != nil {
+	//	return customError(c, err, 400, "Ошибка отправки сообщения в брокер")
+	//}
 
-	hash = dataStorage.GetHash(b)
-	err = messageBroker.SendMessage(airac, hash)
-	if err != nil {
-		return customError(c, err, 400, "")
-	}
-
-	return c.JSON(fiber.Map{
-		"message": "task created",
-	})
+	return successMessage(c, "Задача создана")
 
 }

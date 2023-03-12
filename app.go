@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"github.com/joho/godotenv"
 	"log"
 	"os"
 	"strconv"
@@ -11,7 +12,6 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/swagger"
-	"github.com/joho/godotenv"
 
 	_ "mbase/docs"
 	"mbase/handlers"
@@ -25,12 +25,12 @@ import (
 // @BasePath /
 
 func init() {
-	// Make uploads folder
-	dataStorage.MakeUploadFolder()
 	// loads values from .env into the system
 	if err := godotenv.Load(); err != nil {
 		panic(err)
 	}
+	// Make uploads folder
+	dataStorage.MakeUploadFolder()
 }
 
 func main() {
