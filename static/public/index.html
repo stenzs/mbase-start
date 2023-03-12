@@ -1,35 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Mbase</title>
-		<link rel="stylesheet" href="css/style.css">
-	</head>
-
-	<body>
-		<div class="center">
-			<h1>Send task</h1>
-			<form id="form" enctype="multipart/form-data">
-				<div class="input-group">
-					<div class="elm">
-						<input id="file" type="file"/>
-					</div>
-					<div class="elm">
-						<input type="text" name="airac" id="value">
-					</div>
-					<div class="elm">
-						<button class="submit-btn" type="submit">Upload</button>
-					</div>
-					<div class="elm">
-						<div id="apiResponse"></div>
-					</div>
-
-				</div>
-			</form>
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Mbase</title>
+	<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="center">
+	<h1>Send task</h1>
+	<form id="form" enctype="multipart/form-data">
+		<div class="inputBox">
+			<input id="file" type="file" required="required" multiple/>
 		</div>
-
-	<script src="js/app.js"></script>
-
-	</body>
+		<div class="inputBox">
+			<label for="value"></label>
+			<input type="number" id="value" required="required" min=1000 max=9999 />
+			<span>Airac</span>
+		</div>
+		<div class="elm">
+			<div id="apiResponse"></div>
+		</div>
+		<div class="inputBox">
+			<button class="submit-btn" type="submit">Upload</button>
+		</div>
+	</form>
+</div>
+<script src="js/app.js"></script>
+</body>
 </html>
