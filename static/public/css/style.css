@@ -43,7 +43,8 @@ body {
     display: none;
     position: absolute;
     text-align: center;
-    text-shadow: 0 0 2px #fff;
+    text-shadow: 0 0 2px #000000;
+    color: white;
     width: 100%;
     background: #c2b141;
     padding: 10px;
