@@ -1,33 +1,45 @@
-const form = document.getElementById("form");
-const inputFile = document.getElementById("file");
-const inputValue = document.getElementById("value");
+const form = document.getElementById("form")
+const inputFile = document.getElementById("file")
+const inputValue = document.getElementById("value")
+const notification = document.getElementById("apiResponse")
 
 
 const handleSubmit = async (event) => {
-	event.preventDefault();
+	event.preventDefault()
+	const formData = new FormData()
 
-	const formData = new FormData();
-	const error = null
-
-	formData.append("upload", inputFile.files[0]);
-	formData.append("airac", inputValue.value);
-	let result = await fetch("api/v1/task", {
-		method: "post",
-		body: formData,
-	}).catch((error) => ("Something went wrong!", error));
-	let apiResponse = await result.json();
-
-	if (error) {
-		document.getElementById('apiResponse').innerHTML = JSON.stringify(error);
-	} else {
-		if (apiResponse["message"] !== undefined) {
-			document.getElementById('apiResponse').innerHTML = JSON.stringify(apiResponse["message"]);
-			document.getElementById("value").value = "";
-			document.getElementById('file').value = "";
-		} else {
-			document.getElementById('apiResponse').innerHTML = JSON.stringify(apiResponse["msg"]);
-		}
+	for (let i = 0; i < inputFile.files.length; i++) {
+		formData.append("upload", inputFile.files[i])
 	}
-};
+	formData.append("airac", inputValue.value)
 
-form.addEventListener("submit", handleSubmit);
+	fetch("api/v1/task", {
+		method: "post",
+		body: formData
+	}).then((response) => {
+		if (response.ok) {
+			return response
+		}
+		throw new Error("Something went wrong")
+	})
+		.then((apiResponse) => {
+			if (apiResponse.code === 200) {
+				inputValue.value = ""
+				inputFile.value = ""
+				notification.style.background = "green"
+				notification.innerHTML = JSON.stringify(apiResponse.json()["message"])
+				notification.style.display = "block"
+			} else {
+				notification.style.background = "red"
+				notification.innerHTML = JSON.stringify(apiResponse.json()["msg"])
+				notification.style.display = "block"
+			}
+		})
+		.catch((error) => {
+			notification.style.background = "red"
+			notification.innerHTML = error
+			notification.style.display = "block"
+		})
+}
+
+form.addEventListener("submit", handleSubmit)
