@@ -28,7 +28,7 @@ const handleSubmit = async (event) => {
 				notification.style.display = "block"
 			} else {
 				notification.style.background = "red"
-				notification.innerHTML = JSON.stringify(json["msg"])
+				notification.innerHTML = JSON.stringify(json["description"])
 				notification.style.display = "block"
 			}
 		})
