@@ -117,11 +117,16 @@ func CreateTask(c *fiber.Ctx) error {
 func UpdateTaskStatus(c *fiber.Ctx) error {
 
 	payload := struct {
-		Name uuid.UUID `json:"Uuid"`
+		TaskUuid uuid.UUID `json:"uuid"`
+		Status   string    `json:"status"`
 	}{}
 
 	if err := c.BodyParser(&payload); err != nil {
 		return customError(c, err, 400, "Некорректные данные")
+	}
+
+	if err := database.UpdateTaskByUuid(payload.TaskUuid, payload.Status); err != nil {
+		return customError(c, err, 400, "Ошибка подключения к бд")
 	}
 
 	return successMessage(c, 200, "Статус обновлен")

@@ -30,9 +30,8 @@ func init() {
 	if err := godotenv.Load(); err != nil {
 		panic(err)
 	}
-	// Make uploads folder
 	dataStorage.MakeUploadFolder()
-	database.Engine()
+	database.CheckEngine()
 	database.CreateTable()
 }
 
