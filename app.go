@@ -62,7 +62,7 @@ func main() {
 	v1 := app.Group("/api/v1")
 
 	// Bind handlers
-	v1.Post("/task", handlers.UpdateData)
+	v1.Post("/task", handlers.CreateTask)
 
 	// Setup static files
 	app.Static("/", "./static/public")

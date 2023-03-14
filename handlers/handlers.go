@@ -46,7 +46,7 @@ func successMessage(c *fiber.Ctx, message string) error {
 // @Success		200		{string}	string	"answer"
 // @Failure		400		{string}	string	"err"
 // @Router /api/v1/task [post]
-func UpdateData(c *fiber.Ctx) error {
+func CreateTask(c *fiber.Ctx) error {
 	var err error
 	var file *multipart.FileHeader
 	var files []*multipart.FileHeader
