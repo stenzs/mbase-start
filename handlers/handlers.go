@@ -12,6 +12,7 @@ import (
 
 	"mbase/models"
 	"mbase/services/dataStorage"
+	"mbase/services/database"
 	"mbase/services/messageBroker"
 	"mbase/services/validator"
 )
@@ -30,8 +31,8 @@ func customError(c *fiber.Ctx, err error, status int, description string) error 
 }
 
 // successMessage returns success 200 message
-func successMessage(c *fiber.Ctx, message string) error {
-	return c.Status(200).JSON(fiber.Map{
+func successMessage(c *fiber.Ctx, status int, message string) error {
+	return c.Status(status).JSON(fiber.Map{
 		"status":  "OK",
 		"message": message,
 	})
@@ -54,6 +55,7 @@ func CreateTask(c *fiber.Ctx) error {
 	var airac string
 	var b []byte
 	var filesHash []string
+	var taskUuid = uuid.New()
 
 	airac = c.FormValue("airac")
 	err = validator.ValidateAirac(airac)
@@ -95,14 +97,33 @@ func CreateTask(c *fiber.Ctx) error {
 
 	}
 
+	err = database.InsertTask(taskUuid)
+	if err != nil {
+		return customError(c, err, 400, "Ошибка записи в базу данных")
+	}
+
 	numAirac, _ := strconv.ParseInt(airac, 10, 16)
-	message := models.Task{Uuid: uuid.New(), PublishedAt: time.Now(), Airac: numAirac, Files: filesHash}
+	message := models.Task{Uuid: taskUuid, PublishedAt: time.Now(), Airac: numAirac, Files: filesHash}
 
 	err = messageBroker.SendMessage(message)
 	if err != nil {
 		return customError(c, err, 400, "Ошибка отправки сообщения брокеру")
 	}
 
-	return successMessage(c, "Задача создана")
+	return successMessage(c, 201, "Задача создана")
+
+}
+
+func UpdateTaskStatus(c *fiber.Ctx) error {
+
+	payload := struct {
+		Name uuid.UUID `json:"Uuid"`
+	}{}
+
+	if err := c.BodyParser(&payload); err != nil {
+		return customError(c, err, 400, "Некорректные данные")
+	}
+
+	return successMessage(c, 200, "Статус обновлен")
 
 }

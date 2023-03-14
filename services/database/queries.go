@@ -1,22 +1,12 @@
 package database
 
 import (
-	"database/sql"
+	"time"
+
+	"github.com/google/uuid"
 )
 
-func CheckError(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
-
 func CreateTable() {
-	defer func(db *sql.DB) {
-		err := db.Close()
-		if err != nil {
-		}
-	}(db)
-
 	query := `CREATE TABLE IF NOT EXISTS tasks (
     			uuid uuid NOT NULL,
     			status varchar(50) NOT NULL DEFAULT 'CREATED',
@@ -25,7 +15,14 @@ func CreateTable() {
     			finished_at timestamp,
     			PRIMARY KEY (uuid)
 )`
-	_, e := db.Exec(query)
-	//_, e := db.Exec(insertDynStmt, "Jack", 21)
-	CheckError(e)
+	_, err := db.Exec(query)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func InsertTask(uuid uuid.UUID) error {
+	query := `INSERT INTO "tasks"("uuid", "created_at") values($1, $2)`
+	_, err := db.Exec(query, uuid, time.Now())
+	return err
 }

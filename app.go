@@ -66,6 +66,7 @@ func main() {
 
 	// Bind handlers
 	v1.Post("/task", handlers.CreateTask)
+	v1.Put("/task", handlers.UpdateTaskStatus)
 
 	// Setup static files
 	app.Static("/", "./static/public")
