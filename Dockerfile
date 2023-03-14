@@ -5,6 +5,7 @@ COPY docs ./docs
 COPY handlers ./handlers
 COPY services ./services
 COPY static ./static
+COPY models ./models
 COPY .env ./
 COPY app.go ./
 COPY go.mod ./
