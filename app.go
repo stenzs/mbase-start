@@ -16,6 +16,7 @@ import (
 	_ "mbase/docs"
 	"mbase/handlers"
 	"mbase/services/dataStorage"
+	"mbase/services/database"
 )
 
 // mbase
@@ -31,6 +32,8 @@ func init() {
 	}
 	// Make uploads folder
 	dataStorage.MakeUploadFolder()
+	database.Engine()
+	database.CreateTable()
 }
 
 func main() {

@@ -19,8 +19,8 @@ docker-rm:
 docker-start:
 	docker-compose -f docker-compose.yaml up -d --build mbase
 
-docker-start-only-redis:
-	docker-compose -f docker-compose.yaml up -d --build mbase-redis
+docker-start-only-dbs:
+	docker-compose -f docker-compose.yaml up -d --build mbase-redis postgres-mbase
 
 clean-uploads:
 	@if [  -d "static/public/uploads" ];then     \

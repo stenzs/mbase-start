@@ -37,7 +37,7 @@ func successMessage(c *fiber.Ctx, message string) error {
 	})
 }
 
-// UpdateData godoc
+// CreateTask godoc
 // @Summary		Create new task
 // @Tags			task
 // @Accept			mpfd
@@ -102,12 +102,6 @@ func CreateTask(c *fiber.Ctx) error {
 	if err != nil {
 		return customError(c, err, 400, "Ошибка отправки сообщения брокеру")
 	}
-
-	//hash = dataStorage.GetHash(b)
-	//err = messageBroker.SendMessage(airac, hash)
-	//if err != nil {
-	//	return customError(c, err, 400, "Ошибка отправки сообщения в брокер")
-	//}
 
 	return successMessage(c, "Задача создана")
 

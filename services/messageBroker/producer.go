@@ -3,6 +3,7 @@ package messageBroker
 import (
 	"encoding/json"
 	"log"
+	"os"
 
 	"github.com/adjust/rmq/v5"
 
@@ -19,7 +20,7 @@ func SendMessage(message models.Task) error {
 	errChan := make(chan error, 100)
 	go logErrors(errChan)
 
-	connection, err := rmq.OpenConnection("mbase", "tcp", "mbase-redis:6379", 1, errChan)
+	connection, err := rmq.OpenConnection("mbase", "tcp", os.Getenv("REDIS_URL"), 1, errChan)
 	if err != nil {
 		return err
 	}

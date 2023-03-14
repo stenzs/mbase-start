@@ -5,8 +5,9 @@ networks:
     driver: bridge
 
 volumes:
-  redis-data:
+  redis-mbase-data:
     driver: local
+  postgres-mbase-data:
 
 services:
   mbase:
@@ -16,6 +17,8 @@ services:
       - mbase
     depends_on:
       mbase-redis:
+        condition: service_healthy
+      postgres-mbase:
         condition: service_healthy
     restart: always
     build:
@@ -37,12 +40,33 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - redis-data:/bitnami/redis/data
+      - redis-mbase-data:/bitnami/redis/data
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
       - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
     healthcheck:
       test: ["CMD", "redis-cli","ping"]
+      start_period: 15s
+      interval: 5s
+      timeout: 10s
+      retries: 10
+
+  postgres-mbase:
+    container_name: postgres-mbase
+    image: postgres:15
+    networks:
+      - mbase
+    restart: always
+    ports:
+      - "5436:5432"
+    volumes:
+      - postgres-mbase-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=mbase
+      - POSTGRES_USER=mbase
+      - POSTGRES_PASSWORD=mbase
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
       start_period: 15s
       interval: 5s
       timeout: 10s
